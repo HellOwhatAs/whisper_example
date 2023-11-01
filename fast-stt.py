@@ -20,7 +20,7 @@ for segment in segments:
         "end": segment.end,
         "text": segment.text
     })
-result["text"] = ', '.join(segment["text"] for segment in result["segments"])
+result["text"] = ' '.join(segment["text"] for segment in result["segments"])
 
 with open("fast_whisper_result.json", 'w', encoding='utf-8') as f:
     json.dump(result, f, indent=4, ensure_ascii=False)
