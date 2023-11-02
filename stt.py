@@ -1,4 +1,5 @@
-import whisper, json
+import whisper, srt, datetime
+from typing import List
 
 # `whisper._MODELS`
 model = whisper.load_model("medium", 'cuda', download_root='./models')
@@ -8,8 +9,10 @@ result = model.transcribe(
     initial_prompt='Tyson Fury: If you want to blame me, blame me!'
 )
 
-with open("whisper_result.json", 'w', encoding='utf-8') as f:
-    json.dump(result, f, indent=4, ensure_ascii=False)
-
-for segment in result["segments"]:
+subtitles: List[srt.Subtitle] = []
+for idx, segment in enumerate(result["segments"]):
     print("[%.2fs -> %.2fs] %s" % (segment["start"], segment["end"], segment["text"]))
+    subtitles.append(srt.Subtitle(idx, datetime.timedelta(seconds=segment["start"]), datetime.timedelta(seconds=segment["end"]), segment["text"]))
+
+with open("./whisper_result.srt", 'w', encoding='utf-8') as f:
+    f.write(srt.compose(subtitles))
